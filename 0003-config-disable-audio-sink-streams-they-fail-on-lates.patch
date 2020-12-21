@@ -1,0 +1,55 @@
+From 380dc4b80643261466c6c64e1e0fed2d12a8298b Mon Sep 17 00:00:00 2001
+From: George Kiagiadakis <george.kiagiadakis@collabora.com>
+Date: Mon, 21 Dec 2020 18:47:42 +0200
+Subject: [PATCH 3/3] config: disable audio sink "streams"; they fail on latest
+ pipewire
+
+Fixes #22
+---
+ src/config/10-alsa-audio-sink.endpoint        | 2 +-
+ src/config/11-hw:0,0-alsa-audio-sink.endpoint | 2 +-
+ src/config/15-usb-alsa-audio-sink.endpoint    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/config/10-alsa-audio-sink.endpoint b/src/config/10-alsa-audio-sink.endpoint
+index c1ef230..f47a657 100644
+--- a/src/config/10-alsa-audio-sink.endpoint
++++ b/src/config/10-alsa-audio-sink.endpoint
+@@ -7,7 +7,7 @@ properties = [
+ [endpoint]
+ session = "audio"
+ type = "si-adapter"
+-streams = "audio-sink.streams"
++#streams = "audio-sink.streams"
+ 
+ [endpoint.config]
+ enable-monitor = true
+diff --git a/src/config/11-hw:0,0-alsa-audio-sink.endpoint b/src/config/11-hw:0,0-alsa-audio-sink.endpoint
+index ffc2459..bc99dfe 100644
+--- a/src/config/11-hw:0,0-alsa-audio-sink.endpoint
++++ b/src/config/11-hw:0,0-alsa-audio-sink.endpoint
+@@ -8,7 +8,7 @@ properties = [
+ [endpoint]
+ session = "audio"
+ type = "si-adapter"
+-streams = "audio-sink.streams"
++#streams = "audio-sink.streams"
+ 
+ [endpoint.config]
+ priority = 1
+diff --git a/src/config/15-usb-alsa-audio-sink.endpoint b/src/config/15-usb-alsa-audio-sink.endpoint
+index f87f819..086ccb1 100644
+--- a/src/config/15-usb-alsa-audio-sink.endpoint
++++ b/src/config/15-usb-alsa-audio-sink.endpoint
+@@ -8,7 +8,7 @@ properties = [
+ [endpoint]
+ session = "audio"
+ type = "si-adapter"
+-streams = "audio-sink.streams"
++#streams = "audio-sink.streams"
+ 
+ [endpoint.config]
+ priority = 5
+-- 
+2.29.2
+

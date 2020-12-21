@@ -1,0 +1,100 @@
+From 2667e573084851f1c0a6a177befe9f7fdf675fdc Mon Sep 17 00:00:00 2001
+From: David Runge <dave@sleepmap.de>
+Date: Sun, 19 Jul 2020 10:25:29 +0200
+Subject: [PATCH 1/3] Allow system cpptoml
+
+meson.build:
+When the 'wrap_mode' option is set to 'nodownload' use a system version
+of cpptoml. This does not require using git and having a network
+connection during build, which is important for Linux packaging
+infrastructure.
+
+subprojects/cpptoml.wrap:
+Pin revision to last release tag (v0.1.1).
+
+lib/wptoml/*.cpp:
+Remove 'include/' prefix from all cpptoml related includes, at is not
+required.
+
+Closes #17
+---
+ lib/wptoml/array.cpp     |  2 +-
+ lib/wptoml/file.cpp      |  2 +-
+ lib/wptoml/table.cpp     |  2 +-
+ meson.build              | 10 +++++++---
+ subprojects/cpptoml.wrap |  2 +-
+ 5 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/lib/wptoml/array.cpp b/lib/wptoml/array.cpp
+index a907d26..92b5180 100644
+--- a/lib/wptoml/array.cpp
++++ b/lib/wptoml/array.cpp
+@@ -10,7 +10,7 @@
+ #include <functional>
+ 
+ /* CPPTOML */
+-#include <include/cpptoml.h>
++#include <cpptoml.h>
+ 
+ /* TOML */
+ #include "private.h"
+diff --git a/lib/wptoml/file.cpp b/lib/wptoml/file.cpp
+index d39e468..4b53e03 100644
+--- a/lib/wptoml/file.cpp
++++ b/lib/wptoml/file.cpp
+@@ -7,7 +7,7 @@
+  */
+ 
+ /* CPPTOML */
+-#include <include/cpptoml.h>
++#include <cpptoml.h>
+ 
+ /* TOML */
+ #include "private.h"
+diff --git a/lib/wptoml/table.cpp b/lib/wptoml/table.cpp
+index 3224826..40368f5 100644
+--- a/lib/wptoml/table.cpp
++++ b/lib/wptoml/table.cpp
+@@ -10,7 +10,7 @@
+ #include <functional>
+ 
+ /* CPPTOML */
+-#include <include/cpptoml.h>
++#include <cpptoml.h>
+ 
+ /* TOML */
+ #include "private.h"
+diff --git a/meson.build b/meson.build
+index 650daa7..9f71356 100644
+--- a/meson.build
++++ b/meson.build
+@@ -26,9 +26,13 @@ else
+   wireplumber_config_dir = join_paths(get_option('prefix'), get_option('sysconfdir'), 'wireplumber')
+ endif
+ 
+-cmake = import('cmake')
+-cpptoml = cmake.subproject('cpptoml')
+-cpptoml_dep = cpptoml.dependency('cpptoml')
++if get_option('wrap_mode') == 'nodownload'
++  cpptoml_dep = dependency('cpptoml')
++else
++  cmake = import('cmake')
++  cpptoml = cmake.subproject('cpptoml')
++  cpptoml_dep = cpptoml.dependency('cpptoml')
++endif
+ 
+ gobject_dep = dependency('gobject-2.0', version : '>= 2.58')
+ gmodule_dep = dependency('gmodule-2.0', version : '== ' + gobject_dep.version())
+diff --git a/subprojects/cpptoml.wrap b/subprojects/cpptoml.wrap
+index 7fa60bd..a342dcb 100644
+--- a/subprojects/cpptoml.wrap
++++ b/subprojects/cpptoml.wrap
+@@ -1,4 +1,4 @@
+ [wrap-git]
+ directory=cpptoml
+ url=https://github.com/skystrife/cpptoml.git
+-revision=master
++revision=v0.1.1
+-- 
+2.29.2
+
